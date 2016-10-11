@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.y.axisRight text {
+    fill: orange;
+}
+
+.y.axisLeft text {
+    fill: steelblue;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar1 {
+  fill: steelblue;
+}
+
+.bar2 {
+  fill: orange;
+}
+path { 
+    stroke: red;
+    stroke-width: 2;
+    fill: none;
+}
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+var margin = {top: 80, right: 80, bottom: 80, left: 80},
+    width = 500 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width],.3);
+
+var y0 = d3.scale.linear().domain([300, 1100]).range([height, 0]),
+y1 = d3.scale.linear().domain([20, 80]).range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+// create left yAxis
+var yAxisLeft = d3.svg.axis().scale(y0).ticks(4).orient("left");
+// create right yAxis
+var yAxisRight = d3.svg.axis().scale(y1).ticks(6).orient("right");
+
+
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("class", "graph")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.json("actualJson.json", function(error, data) {
+ 
+
+  x.domain(data.map(function(d) { return d.Month; }));
+  y0.domain([0, d3.max(data, function(d) { return d.interactions; })]);
+  y1.domain([0, d3.max(data, function(d) { if(d.Year === 2016){
+       return d.No_interactions;
+  } })]);
+  
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+	  .attr("class", "y axis axisLeft")
+	  .attr("transform", "translate(0,0)")
+	  .call(yAxisLeft)
+	  .append("text")
+	  .attr("y", 6)
+	  .attr("dy", "-2em")
+	  .style("text-anchor", "end")
+	  .style("text-anchor", "end")
+	  .text("Dollars");
+	
+  svg.append("g")
+	  .attr("class", "y axis axisRight")
+	  .attr("transform", "translate(" + (width) + ",0)")
+	  .call(yAxisRight)
+	  .append("text")
+	  .attr("y", 6)
+	  .attr("dy", "-2em")
+	  .attr("dx", "2em")
+	  .style("text-anchor", "end")
+	  .text("#");
+   
+
+  bars = svg.selectAll(".bar").data(data).enter();
+
+  bars.append("rect")
+      .attr("class", "bar1")
+      .transition()
+      .duration(500)
+      .delay(function(d, i) {
+          return i * 50;
+        })
+      .attr("x", function(d) { 
+                    if(d.Year=== 2016){
+                        return x(d.Month);
+                    } 
+       })
+      .attr("width", x.rangeBand()/3)
+      .attr("y", function(d) { 
+                 if(d.Year=== 2016){
+                    return y0(d.interactions);
+                 } 
+                 })
+	    .attr("height", function(d,i,j) {  if(d.Year=== 2016){
+        return height - y0(d.interactions); 
+      }})
+    
+
+  bars.append("rect")
+      .attr("class", "bar2")
+      .transition()
+        .duration(500)
+        .delay(function(d, i) {
+          return i * 50;
+        })
+      
+      .attr("x", function(d) { 
+                  if(d.Year === 2015){
+                      return x(d.Month) + x.rangeBand()/3; 
+                  }
+                })
+      .attr("width", x.rangeBand() / 3)
+      .attr("y", function(d) { 
+                  if(d.Year=== 2015){   
+                     return y0(d.interactions); 
+                  }
+                  })
+      
+	  .attr("height", function(d,i,j) { 
+             if(d.Year=== 2015){ 
+
+             return height - y0(d.interactions);
+             } })
+
+    var valueline = d3.svg.line()
+    .interpolate("basis")           
+    .x(function(d) { if(d.Year === 2016){
+         return x(d.Month); 
+    }})
+    .y(function(d) { 
+       if(d.Year === 2016){
+         return y1(d.No_interactions); 
+       }
+       });
+
+  var path = svg.append("path")
+  .datum(data)
+  .attr('d', valueline)
+  var totalLength = path.node().getTotalLength();
+   path
+      .attr("stroke-dasharray", totalLength + " " + totalLength)
+      .attr("stroke-dashoffset", totalLength)
+      .transition()
+        .duration(2000)
+        .ease("linear")
+        .attr("stroke-dashoffset", 0);
+
+
+});
+
+</script>

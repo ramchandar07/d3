@@ -1,0 +1,61 @@
+[
+	{
+		"year": "J   ",
+		"money": 550,
+		"number": 35
+	},
+	{
+		"year": "F",
+		"money": 600,
+		"number": 40
+	},
+	{
+		"year": "M",
+		"money": 700,
+		"number": 45
+	},
+	{
+		"year": "A",
+		"money": 800,
+		"number": 60
+	},
+	{
+		"year": "MA",
+		"money": 900,
+		"number": 70
+	},
+	{
+		"year": "J",
+		"money": 850,
+		"number": 65
+	},
+	{
+		"year": "Ju",
+		"money": 880,
+		"number": 67
+	},
+	{
+		"year": "AU",
+		"money": 900,
+		"number": 70
+	},
+	{
+		"year": "S",
+		"money": 1000,
+		"number": 75
+	},
+	{
+	  "year": "O",
+		"money": 600,
+		"number": 25
+	},{
+	"year": "N",
+		"money": 610,
+		"number": 70
+	},{
+	  
+	"year": "D",
+		"money": 420,
+		"number": 57
+	}
+]
